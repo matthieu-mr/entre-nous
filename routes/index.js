@@ -203,6 +203,20 @@ doc : http://project-osrm.org/docs/v5.22.0/api/#general-options
 ex  : http://router.project-osrm.org/route/v1/driving/13.388860,52.517037;13.397634,52.529407?overview=false
  */
  // ---- gps perso : 
+
+/* distance villes 
+nom : matthieu-michon
+
+key : so6d2d53100c93c597bca8905237b161ff6c8b7beb
+
+
+var requestCity = request('GET',` https://www.villes-voisines.fr/getcp.php?cp=${cp}&rayon=50`)
+var response = JSON.parse(requestCity.getBody())
+ 
+
+*/
+
+
 let dep = 94
 
 
@@ -216,6 +230,29 @@ res.json({response});
 
 });
 
+router.post('/villeproches',async function(req, res, next) {
 
+
+/* distance villes 
+var requestCity = request('GET',` https://www.villes-voisines.fr/getcp.php?cp=${cp}&rayon=50`)
+var response = JSON.parse(requestCity.getBody())
+ 
+
+*/
+
+
+let cp = 94100
+
+
+
+var requestCity = request('GET',` https://www.villes-voisines.fr/getcp.php?cp=${cp}&rayon=50`)
+var response = JSON.parse(requestCity.getBody())
+ 
+
+
+
+res.json({response});
+
+});
 
 module.exports = router;
