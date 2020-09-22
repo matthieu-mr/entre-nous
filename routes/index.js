@@ -98,8 +98,8 @@ allNrestreint.map(async (item,i )=> {
  
 
       restreint: false,
-      horaires: adressApi, 
-      adress: longitude,
+      horaires: horaireReplace, 
+      adress: adressApi,
       postcode:postcodeApi,
       city: cityApi,
       dep:deptApi,
@@ -121,8 +121,6 @@ allNrestreint.map(async (item,i )=> {
 
 
 router.get('/nrestreinttest',async function(req, res, next) {
-
- 
 
 var users = await nRestreint.findOne(
   { ID: "JaIa12VeLfUnD27l"}
@@ -149,5 +147,36 @@ await newLab.save()
     res.json({users});
   });
   
+
+
+
+/* GET home page. */
+router.get('/distpoint',async function(req, res, next) {
+  /*
+
+doc : http://project-osrm.org/docs/v5.22.0/api/#general-options
+ex  : http://router.project-osrm.org/route/v1/driving/13.388860,52.517037;13.397634,52.529407?overview=false
+ */
+ // ---- gps perso : 
+let lat = 48.7927087
+let lon = 2.5133559
+
+
+// ----GPS autre 
+let latDest = 46.2038511077026
+let lonDest = 5.24185205182066
+
+ 
+  
+ var requestDist = request('GET',`http://router.project-osrm.org/route/v1/driving/${lon},${lat};${lonDest},${latDest}?overview=false`)
+ var response = JSON.parse(requestDist.getBody())
+  
+
+  
+  res.json({response});
+
+});
+
+
 
 module.exports = router;
