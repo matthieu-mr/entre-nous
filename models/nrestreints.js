@@ -8,20 +8,21 @@ var nrestreintSchema = mongoose.Schema({
     rs: String,
     adresse: String,
     cpl_loc: String,
-    longitude: String,
-    latitude: String,
+    longitude: Number,
+    latitude: Number,
     mod_prel: String,
     public: String,
     horaire: String,
     check_rdv: String,
     tel_rdv: String,
     web_rdv: String,
+    restreint:String,
 
-    horaires: String,
     adress : String,
     postcode :String,
     city: String,
     dep:String,
+    distUser:String,
 
 });
 

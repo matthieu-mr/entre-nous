@@ -19,25 +19,26 @@ router.get('/',  function(req, res, next) {
 
 router.get('/deletAllDb',async  function(req, res, next) {
 
-  var allInfo = await nRestreintOkModel.find();
+  var allInfo = await nRestreint.find();
 
   allInfo.map(async (item)=>{
     console.log(item._id)
 
-    let num = item._id
-    await nRestreintOkModel.remove({
-      _id:ObjectId(`${num}`)
-    })
+    let publicget = item.id_ej
+    await nRestreint.deleteMany(
+      { id_ej: publicget}
+    )
   })
 
-  var allInfo2 = await nRestreintOkModel.find();
+
+  var allInfo2 = await nRestreint.find();
+
   res.render('index', {allInfo2 });
 });
 
 router.get('/nrestreint',async function(req, res, next) {
 
 var allNrestreint = await nRestreint.find();
-
 
 
 allNrestreint.map(async (item,i )=> {
@@ -51,9 +52,9 @@ allNrestreint.map(async (item,i )=> {
 
 
     let horairesRaw = item.horaire  
-    let horaireReplace = horairesRaw.split("|")
+  //  let horaireReplace = horairesRaw.split("|")
     
-    let prelReplace = mod_prel.split("/")
+  //  let prelReplace = item.mod_prel.split("/")
     
     var requestAdress = request('GET',`https://api-adresse.data.gouv.fr/reverse/?lon=${longitude}&lat=${latitude}&type=street`)
     var response = JSON.parse(requestAdress.getBody())
@@ -65,23 +66,24 @@ allNrestreint.map(async (item,i )=> {
     let cityApi = response.features[0].properties.city
     let deptApi = response.features[0].properties.postcode[0] + response.features[0].properties.postcode[1]
   /*
-
     await nRestreint.updateOne(
       { ID: itemKey},
      { 
-      restreint: false,
-      horaires: adressApi, 
-      adress : longitude,
-      postcode :longitude,
-      city: longitude,
-      dep:longitude,
+
+      restreint: "false",
+      horaire: horaireReplace, 
+      adress: adressApi,
+      postcode:postcodeApi,
+      city: cityApi,
+      dep:deptApi,
+      distUser:"none",
         }
    );
-  
+  */
 
-*/
+
    
-    var newLab = await  new nRestreintOkModel({
+    var newLab = await new nRestreintOkModel({
 
       ID: item.id,
       id_ej: item.id_ej,
@@ -90,21 +92,19 @@ allNrestreint.map(async (item,i )=> {
       cpl_loc: item.cpl_loc,
       longitude: item.longitude,
       latitude: item.latitude,
-      mod_prel:prelReplace,
+      mod_prel:item.mod_prel,
       public: item.public,
-      horaire: item.horaireReplace,
+      horaire: horairesRaw,
       check_rdv: item.check_rdv,
       tel_rdv: item.tel_rdv,
       web_rdv: item.web_rdv,
- 
 
-      restreint: false,
-      horaires: horaireReplace, 
+      restrint: "false",
       adress: adressApi,
       postcode:postcodeApi,
       city: cityApi,
       dep:deptApi,
-      distUser:"none"
+      distUser:"none",
 
     })
 
@@ -115,10 +115,23 @@ allNrestreint.map(async (item,i )=> {
 })
 
 
-
-
   res.json( { allNrestreint });
 });
+
+
+/* GET home page. */
+router.post('/listpoint', async function(req, res, next) {
+  let liste = await nRestreintOkModel.find({
+    dep:"94"
+  }
+  );
+  
+
+  res.json( { liste});
+});
+
+
+
 
 
 
