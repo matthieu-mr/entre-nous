@@ -53,6 +53,7 @@ allNrestreint.map(async (item,i )=> {
     let horairesRaw = item.horaire  
     let horaireReplace = horairesRaw.split("|")
     
+    let prelReplace = mod_prel.split("/")
     
     var requestAdress = request('GET',`https://api-adresse.data.gouv.fr/reverse/?lon=${longitude}&lat=${latitude}&type=street`)
     var response = JSON.parse(requestAdress.getBody())
@@ -89,7 +90,7 @@ allNrestreint.map(async (item,i )=> {
       cpl_loc: item.cpl_loc,
       longitude: item.longitude,
       latitude: item.latitude,
-      mod_prel:item.mod_prel,
+      mod_prel:prelReplace,
       public: item.public,
       horaire: item.horaireReplace,
       check_rdv: item.check_rdv,
@@ -103,6 +104,7 @@ allNrestreint.map(async (item,i )=> {
       postcode:postcodeApi,
       city: cityApi,
       dep:deptApi,
+      distUser:"none"
 
     })
 
@@ -151,7 +153,7 @@ await newLab.save()
 
 
 /* GET home page. */
-router.get('/distpoint',async function(req, res, next) {
+router.post('/distpoint',async function(req, res, next) {
   /*
 
 doc : http://project-osrm.org/docs/v5.22.0/api/#general-options
@@ -166,14 +168,51 @@ let lon = 2.5133559
 let latDest = 46.2038511077026
 let lonDest = 5.24185205182066
 
- 
-  
- var requestDist = request('GET',`http://router.project-osrm.org/route/v1/driving/${lon},${lat};${lonDest},${latDest}?overview=false`)
- var response = JSON.parse(requestDist.getBody())
+var listCentre = await nRestreintOkModel.find({
+  postcode:"94100"
+})
   
 
-  
-  res.json({response});
+listCentre.map ((item)=>{
+
+let latDest = item.latitude
+let lonDest = item.longitude
+
+var requestDist = request('GET',`http://router.project-osrm.org/route/v1/driving/${lon},${lat};${lonDest},${latDest}?overview=false`)
+var response = JSON.parse(requestDist.getBody())
+ 
+let distanceKm = response.routes[0].distance /1000  
+item.distUser = distanceKm
+console.log(distanceKm)
+
+})
+
+
+
+res.json({listCentre});
+
+});
+
+
+
+/* GET home page. */
+router.post('/listdept',async function(req, res, next) {
+  /*
+
+doc : http://project-osrm.org/docs/v5.22.0/api/#general-options
+ex  : http://router.project-osrm.org/route/v1/driving/13.388860,52.517037;13.397634,52.529407?overview=false
+ */
+ // ---- gps perso : 
+let dep = 94
+
+
+
+var requestCity = request('GET',` https://geo.api.gouv.fr/departements/${dep}/communes`)
+var response = JSON.parse(requestCity.getBody())
+ 
+
+
+res.json({response});
 
 });
 

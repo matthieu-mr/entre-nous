@@ -23,6 +23,7 @@ var nrestreintokSchema = mongoose.Schema({
         postcode :String,
         city: String,
         dep:String,
+        distUser:String,
 });
 
 
