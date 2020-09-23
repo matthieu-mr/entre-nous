@@ -65,22 +65,6 @@ allNrestreint.map(async (item,i )=> {
     let distanceApi = response.features[0].properties.distance
     let cityApi = response.features[0].properties.city
     let deptApi = response.features[0].properties.postcode[0] + response.features[0].properties.postcode[1]
-  /*
-    await nRestreint.updateOne(
-      { ID: itemKey},
-     { 
-
-      restreint: "false",
-      horaire: horaireReplace, 
-      adress: adressApi,
-      postcode:postcodeApi,
-      city: cityApi,
-      dep:deptApi,
-      distUser:"none",
-        }
-   );
-  */
-
 
    
     var newLab = await new nRestreintOkModel({
@@ -99,7 +83,7 @@ allNrestreint.map(async (item,i )=> {
       tel_rdv: item.tel_rdv,
       web_rdv: item.web_rdv,
 
-      restrint: "false",
+      restrint: false,
       adress: adressApi,
       postcode:postcodeApi,
       city: cityApi,
@@ -121,10 +105,14 @@ allNrestreint.map(async (item,i )=> {
 
 /* GET home page. */
 router.post('/listpoint', async function(req, res, next) {
+  console.log("requete",req.body.dept)
+
+  let dept = req.body.dept
+  let modif = dept.replace(/ /g,"");
+
   let liste = await nRestreintOkModel.find({
-    dep:"94"
-  }
-  );
+    dep:modif
+  }).sort( { postcode: 1 } );
   
 
   res.json( { liste});
@@ -154,91 +142,25 @@ await nRestreint.updateOne(
 var newLab = new nRestreintOkModel({
   nom:"test",
   restreint: true,
-
 })
-
-await newLab.save()
-
+  await newLab.save()
     res.json({users});
   });
   
 
+  router.post('/labinfo',async function(req, res, next) {
+    console.log("recup info" , req.body)
+    let  valeur = "020015814"
 
-
-/* GET home page. */
-router.post('/distpoint',async function(req, res, next) {
-  /*
-
-doc : http://project-osrm.org/docs/v5.22.0/api/#general-options
-ex  : http://router.project-osrm.org/route/v1/driving/13.388860,52.517037;13.397634,52.529407?overview=false
- */
- // ---- gps perso : 
-let lat = 48.7927087
-let lon = 2.5133559
-
-
-// ----GPS autre 
-let latDest = 46.2038511077026
-let lonDest = 5.24185205182066
-
-var listCentre = await nRestreintOkModel.find({
-  postcode:"94100"
-})
+    let infolab = await nRestreintOkModel.findOne(
+      { id_ej: valeur}
+    )
   
-
-listCentre.map ((item)=>{
-
-let latDest = item.latitude
-let lonDest = item.longitude
-
-var requestDist = request('GET',`http://router.project-osrm.org/route/v1/driving/${lon},${lat};${lonDest},${latDest}?overview=false`)
-var response = JSON.parse(requestDist.getBody())
- 
-let distanceKm = response.routes[0].distance /1000  
-item.distUser = distanceKm
-console.log(distanceKm)
-
-})
-
-
-
-res.json({listCentre});
-
-});
-
-
-
-/* GET home page. */
-router.post('/listdept',async function(req, res, next) {
-
-let dep = 94
-
-var requestCity = request('GET',` https://geo.api.gouv.fr/departements/${dep}/communes`)
-var response = JSON.parse(requestCity.getBody())
-
-res.json({response});
-
-});
-
-router.post('/villeproches',async function(req, res, next) {
-
-
-/* distance villes 
-var requestCity = request('GET',` https://www.villes-voisines.fr/getcp.php?cp=${cp}&rayon=50`)
-var response = JSON.parse(requestCity.getBody())
- 
-*/
-
-
-let cp = 94100
-
-var requestCity = request('GET',` https://www.villes-voisines.fr/getcp.php?cp=${cp}&rayon=50`)
-var response = JSON.parse(requestCity.getBody())
- 
-
-res.json({response});
-
-});
+    let horaireReplace = infolab.horaire.split("|")
+    
+    res.json({infolab,horaireReplace});
+      });
+      
 
 
 //recherche des adresses via lat & long
@@ -260,15 +182,30 @@ router.post('/adressesListCoord',async function(req, res, next) {
     let name = response.features[0].properties.name
     let postCode = response.features[0].properties.postcode
     let city =response.features[0].properties.city
+    let dep_Label=response.features[0].properties.context
     let dep = response.features[0].properties.postcode[0] + response.features[0].properties.postcode[1]
     let adress = {
       name:name,
       postCode:postCode,
       city:city,
-      dep:dep
+      dep_code:dep, 
+      dep_label:dep_Label
     }
   
     res.json({adress});
   });
+
+
+/* GET home page. */
+router.get('/listdept', async function(req, res, next) {
+  var list = request('GET', `https://geo.api.gouv.fr/departements`)
+  var response = JSON.parse(list.getBody())
+
+  res.json( { response});
+});
+
+
+
+
 
 module.exports = router;

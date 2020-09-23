@@ -17,9 +17,7 @@ var nrestreintokSchema = mongoose.Schema({
     check_rdv: String,
     tel_rdv: String,
     web_rdv: String,
-    
     restrint:String,
-   
     adress : String,
     postcode :String,
     city: String,
