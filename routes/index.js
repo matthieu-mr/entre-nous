@@ -22,7 +22,6 @@ router.get('/deletAllDb',async  function(req, res, next) {
   var allInfo = await nRestreint.find();
 
   allInfo.map(async (item)=>{
-    console.log(item._id)
 
     let publicget = item.id_ej
     await nRestreint.deleteMany(
@@ -48,8 +47,6 @@ allNrestreint.map(async (item,i )=> {
     let longitude = item.longitude
     let latitude = item.latitude
     let itemKey = item.ID
-    console.log(item.ID)
-
 
     let horairesRaw = item.horaire  
   //  let horaireReplace = horairesRaw.split("|")
@@ -149,15 +146,30 @@ var newLab = new nRestreintOkModel({
   
 
   router.post('/labinfo',async function(req, res, next) {
-    console.log("recup info" , req.body)
-    let  valeur = "020015814"
+    console.log(req.body)
+
+    let idFront =req.body.idLab
+
+    let idModif = idFront.replace(/ /,"");
+    console.log("recup info" , idModif)
 
     let infolab = await nRestreintOkModel.findOne(
-      { id_ej: valeur}
+      { ID: idFront}
     )
   
-    let horaireReplace = infolab.horaire.split("|")
+    let horaireReplaceRaw = infolab.horaire.split("|")
+    let horaireReplace =[]
+
+    horaireReplaceRaw.map((item,i)=> {
+      let modif = item.replace(/ /,"");
+      item[i] = modif
+      
+    let newItem = modif.charAt(0).toUpperCase() + modif.substring(1).toLowerCase()
+    horaireReplace.push(newItem)
+   
+    })
     
+
     res.json({infolab,horaireReplace});
       });
       
