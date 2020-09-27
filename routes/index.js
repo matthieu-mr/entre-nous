@@ -111,12 +111,10 @@ router.post('/listpoint', async function(req, res, next) {
     dep:modif
   }).sort( { postcode: 1 } );
   
+  //console.log(liste)
 
   res.json( { liste});
 });
-
-
-
 
 
 
@@ -176,14 +174,17 @@ var newLab = new nRestreintOkModel({
 
 
 //recherche des adresses via lat & long
-router.post('/adressesListCoord',async function(req, res, next) {
+router.post('/adresseslistcoord',async function(req, res, next) {
 
-  let lon = req.body.long
+  console.log("-------",req.body)
+
+  let lon = req.body.lon
   let lat = req.body.lat
   
+  /*
    lat = 48.7927087
    lon = 2.5133559
-  
+  */
 
     // Liste des activités hors licence etc ...
   
@@ -217,7 +218,12 @@ router.get('/listdept', async function(req, res, next) {
 });
 
 
+router.get('/datemaj', async function(req, res, next) {
+ 
+  var response = "Dimanche 27 Septembre 2020"
 
+  res.json( { response});
+});
 
 
 module.exports = router;
