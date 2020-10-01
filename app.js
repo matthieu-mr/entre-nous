@@ -6,9 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var caseRouter = require ('./routes/MapCase');
-var delRouter = require ('./routes/manipTable');
-
+var MiddleAdressRouter = require ('./routes/MiddleAdress');
 
 var mongoose = require('./models/bdd_connexion');
 
@@ -26,8 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/case', caseRouter);
-app.use('/manip', delRouter);
+app.use('/adressinfo', MiddleAdressRouter);
 
 
 
